@@ -1,0 +1,8 @@
+---
+name: gainsborough_trilock
+owner: gainsborough_trilock
+version: "1.0.0"
+
+dependencies:
+  - ble_client
+  - lock

@@ -1,0 +1,139 @@
+# ESPHome config for WT32-ETH01 (Gainsborough Trilock BLE bridge)
+# Uses Ethernet + BLE, with OTA and Home Assistant API.
+
+substitutions:
+  device_name: "gainsborough-trilock"
+  friendly_name: "Front Door Lock"
+
+esphome:
+  name: "${device_name}"
+  friendly_name: "${friendly_name}"
+  comment: "Gainsborough Freestyle Trilock BLE bridge on WT32-ETH01"
+
+esp32:
+  board: wt32-eth01
+  framework:
+    type: arduino
+
+external_components:
+  - source: gainsborough_trilock
+
+# Ethernet (WT32-ETH01 / LAN8720)
+ethernet:
+  type: LAN8720
+  mdc_pin: GPIO23
+  mdio_pin: GPIO18
+  clk:
+    pin: GPIO0
+    mode: CLK_EXT_IN
+  phy_addr: 1
+  power_pin: GPIO16
+  # Uncomment for static IP
+  # manual_ip:
+  #   static_ip: 192.168.100.190
+  #   gateway: 192.168.100.1
+  #   subnet: 255.255.255.0
+
+api:
+  encryption:
+    key: !secret api_encryption_key
+  reboot_timeout: 0s
+
+ota:
+  - platform: esphome
+    password: !secret ota_password
+  - platform: web_server
+
+web_server:
+  port: 81
+
+logger:
+  level: DEBUG
+  baud_rate: 115200
+  logs:
+    esp32_ble: DEBUG
+    esp32_ble_client: DEBUG
+    esp32_ble_tracker: DEBUG
+    gainsborough_trilock: DEBUG
+
+esp32_ble_tracker:
+  scan_parameters:
+    interval: 1280ms
+    window: 1280ms
+    active: false
+
+ble_client:
+  - mac_address: !secret trilock_ble_mac
+    id: trilock_ble
+    auto_connect: true
+    on_connect:
+      then:
+        - logger.log: "Trilock BLE connected"
+    on_disconnect:
+      then:
+        - logger.log: "Trilock BLE disconnected"
+
+lock:
+  - platform: gainsborough_trilock
+    id: trilock
+    name: "${friendly_name}"
+    ble_client_id: trilock_ble
+    aes_key: !secret trilock_aes_key
+    update_interval: 30s
+    icon: mdi:door-closed-lock
+    lock_status_sensor:
+      id: lock_status_text
+      name: "${friendly_name} Detailed Status"
+      icon: mdi:lock-check
+
+button:
+  - platform: template
+    name: "${friendly_name} - Privacy Lock"
+    id: btn_privacy_lock
+    icon: mdi:door-closed-lock
+    on_press:
+      then:
+        - logger.log: "Button: Privacy Lock commanded"
+        - lambda: |-
+            id(trilock).set_target_state(2);
+
+  - platform: template
+    name: "${friendly_name} - Deadlock"
+    id: btn_deadlock
+    icon: mdi:shield-lock
+    on_press:
+      then:
+        - logger.log: "Button: Deadlock commanded"
+        - lambda: |-
+            id(trilock).set_target_state(3);
+
+  - platform: restart
+    name: "${friendly_name} Restart"
+    id: btn_restart
+    icon: mdi:restart
+    entity_category: diagnostic
+
+binary_sensor:
+  - platform: template
+    name: "${friendly_name} BLE Connected"
+    id: ble_conn_status
+    device_class: connectivity
+    entity_category: diagnostic
+    lambda: |-
+      return id(trilock_ble).connected();
+
+text_sensor:
+  - platform: version
+    name: "${friendly_name} ESPHome Version"
+    entity_category: diagnostic
+    hide_timestamp: true
+    disabled_by_default: true
+
+  - platform: ethernet_info
+    ip_address:
+      name: "${friendly_name} IP Address"
+      entity_category: diagnostic
+
+time:
+  - platform: homeassistant
+    id: ha_time
