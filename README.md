@@ -1,7 +1,7 @@
 # ESPHome WT32-ETH01 (Gainsborough Trilock)
-This project is based on the reverse engineer work done by mcchas
-ble-freestyle-client
-source code at https://github.com/mcchas/ble-freestyle-client
+
+## Credits & Attribution
+This project is a fork/adaptation based heavily on the excellent work done by [mcchas](https://github.com/mcchas) in the [ble-freestyle-client](https://github.com/mcchas/ble-freestyle-client) repository.
 
 This folder is a clean ESPHome config targeting the WT32-ETH01 board
 with Ethernet (LAN8720), BLE client, OTA, and Home Assistant API.
