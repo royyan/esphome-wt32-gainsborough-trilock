@@ -1,3 +1,13 @@
+/*
+ * This file contains code originally derived from:
+ * https://github.com/mcchas/ble-freestyle-client
+ * Copyright (c) 2024 mcchas
+ * * Modifications and additions:
+ * Copyright (c) 2026 Royyan
+ * * Licensed under the MIT License. 
+ * See the LICENSE file in the project root for full license information.
+ */
+
 #include "gainsborough_trilock.h"
 #include "esphome/components/esp32_ble/ble_uuid.h"
 #include "esphome/components/esp32_ble_client/ble_client_base.h"
