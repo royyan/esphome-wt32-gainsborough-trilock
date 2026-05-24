@@ -1,3 +1,12 @@
+/*
+ * This file contains code originally derived from:
+ * https://github.com/mcchas/ble-freestyle-client
+ * Copyright (c) 2024 mcchas
+ * * Modifications and additions:
+ * Copyright (c) 2026 Royyan
+ * * Licensed under the MIT License. 
+ * See the LICENSE file in the project root for full license information.
+ */
 /**
  * @file gainsborough_trilock.h
  * @brief ESPHome Gainsborough Trilock BLE lock component.
