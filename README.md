@@ -162,15 +162,23 @@ node tools/freestyle-gwasm-status.js
 Environment variables override `tools/freestyle-app-config.json` values when
 both are present.
 
-Username/password login uses Cognito `USER_SRP_AUTH`, matching the mobile app
-client that does not allow `USER_PASSWORD_AUTH`. If authentication fails, rerun
-with auth debugging:
+Username/password login uses the vendored reference implementation in
+`tools/freestyle-client` first. This is the same client used during reverse
+engineering. If that copy is missing, the helper checks `../external` and then
+falls back to its standalone Cognito `USER_SRP_AUTH` implementation. If
+authentication fails, rerun with auth debugging:
 
 ```bash
 FREESTYLE_DEBUG_AUTH=1 node tools/freestyle-gwasm-status.js
 ```
 
 Refresh-token login uses `REFRESH_TOKEN_AUTH`.
+
+To force the standalone implementation even when the reference client exists:
+
+```bash
+FREESTYLE_STANDALONE_AUTH=1 node tools/freestyle-gwasm-status.js
+```
 
 The script prints:
 

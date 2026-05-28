@@ -1,0 +1,34 @@
+import { Session } from "./lib/cognito-client";
+import { Property, Home, Lock } from "./types";
+export default class Freestyle {
+    private username;
+    private password;
+    session?: Session;
+    private client;
+    private timer?;
+    lock?: Lock;
+    private home?;
+    private userPoolId;
+    private userPoolClientId;
+    private property?;
+    private emitter;
+    watchFrequency: number;
+    private agent;
+    constructor(username: string, password: string);
+    authenticate(): Promise<void>;
+    authRefresh(): Promise<void>;
+    watch(): void;
+    set frequency(interval: number);
+    poll(): Promise<void>;
+    on(event: string, callback: Function): void;
+    getProperty(): Promise<Property>;
+    getHome(): Promise<Home>;
+    getHomeCb(callback: Function): Promise<void>;
+    printStatus(): void;
+    init(): Promise<void>;
+    unlock(): Promise<unknown>;
+    deadLock(): Promise<unknown>;
+    privacyLock(): Promise<unknown>;
+    private apiGet;
+    private apiPut;
+}

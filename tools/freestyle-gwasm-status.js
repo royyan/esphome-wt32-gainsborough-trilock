@@ -165,6 +165,31 @@ async function getJson(url, idToken) {
   return text ? JSON.parse(text) : {};
 }
 
+async function cognitoReferenceLogin(username, password) {
+  const referencePaths = [
+    path.resolve(__dirname, "freestyle-client", "dist"),
+    path.resolve(__dirname, "..", "..", "external", "freestyle-client", "dist"),
+  ];
+  const referencePath = referencePaths.find((candidate) => fs.existsSync(candidate));
+  if (!referencePath) return null;
+
+  const reference = require(referencePath);
+  const Freestyle = reference.default || reference;
+  const freestyle = new Freestyle(username, password);
+  await freestyle.authenticate();
+  if (!freestyle.session || !freestyle.session.idToken) {
+    throw new Error("Reference Freestyle client did not return a Cognito session");
+  }
+  if (process.env.FREESTYLE_DEBUG_AUTH === "1") {
+    console.error(`Cognito auth accepted reference client at ${referencePath}`);
+  }
+  return {
+    idToken: freestyle.session.idToken,
+    refreshToken: freestyle.session.refreshToken || "",
+    expiresIn: freestyle.session.expiresIn || 0,
+  };
+}
+
 async function cognitoSrpLogin({ userPoolId, username, password, clientId, clientSecret }) {
   const bigN = hexToBigInt(SRP_N_HEX);
   const g = 2n;
@@ -274,6 +299,10 @@ async function cognitoLogin({ userPoolId, username, password, refreshToken, clie
       throw new Error(`Refresh-token auth failed: ${err.message || err}`);
     }
   } else {
+    if (process.env.FREESTYLE_STANDALONE_AUTH !== "1") {
+      const referenceSession = await cognitoReferenceLogin(username, password);
+      if (referenceSession) return referenceSession;
+    }
     result = await cognitoSrpLogin({ userPoolId, username, password, clientId, clientSecret });
   }
 
