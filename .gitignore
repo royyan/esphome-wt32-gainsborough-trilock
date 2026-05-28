@@ -3,5 +3,18 @@
 # You can modify this file to suit your needs.
 /.esphome/
 /secrets.yaml
+
+# Local logs and generated artifacts
+*.log
+.DS_Store
 __pycache__/
-*.pyc
+*.py[cod]
+
+# Local editor/agent metadata
+/.antigravitycli/
+
+# Local reverse-engineering scratch scripts
+/tools/check_log.js
+/tools/decrypt.js
+/tools/get-all-nonces.js
+/tools/freestyle-app-config.json

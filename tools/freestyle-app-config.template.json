@@ -1,0 +1,10 @@
+{
+  "userPoolId": "ap-southeast-2_WSJBAl6hB",
+  "clientId": "56bpopumtgnheqfchknuchdhvt",
+  "clientSecret": "1l82hrk9jtu3irer8iouf4sgrof6f43j91i4dgrc9i3hcna2ttmu",
+  "username": "<optional Freestyle account email>",
+  "password": "<optional Freestyle account password>",
+  "refreshToken": "<optional existing refresh token>",
+  "propertyId": "<optional property UUID filter>",
+  "bleMac": "<optional lock cloud BLE MAC filter>"
+}
